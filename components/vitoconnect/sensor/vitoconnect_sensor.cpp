@@ -30,12 +30,12 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
   
       uint16_t addr = dp ? dp->getAddress() : this->getAddress();
   
-      ESP_LOGD("vitoconnect",
-               "ADDR=%04X LEN3 RAW=%02X %02X %02X",
-               addr,
-               data[0],
-               data[1],
-               data[2]);
+      //ESP_LOGD("vitoconnect",
+      //         "ADDR=%04X LEN3 RAW=%02X %02X %02X",
+      //         addr,
+      //         data[0],
+      //         data[1],
+      //         data[2]);
   
       // WO1C: některé 3bajtové registry jsou int16 little-endian + status byte.
       // B407 = Evaporation / saturated suction pressure temperature
@@ -48,20 +48,28 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
           addr == 0xB408 ||
           addr == 0xB409 ||
           addr == 0xB40A ||
-          addr == 0x0740 ||        
+          addr == 0x0740 ||
+          addr == 0xB401 ||
+          addr == 0xB403 ||        
           addr == 0xB410 ||
           addr == 0xB411) {
   
           int16_t value =
               (int16_t)(((uint16_t)data[1] << 8) | data[0]);
   
-          ESP_LOGD("vitoconnect",
-                   "ADDR=%04X decoded as int16+status = %d",
-                   addr,
-                   value);
+         // ESP_LOGD("vitoconnect",
+         //          "ADDR=%04X decoded as int16+status = %d",
+         //          addr,
+         //          value);
   
           publish_state((float)value);
       }
+      else if (addr == 0x130B) {
+      
+          publish_state((float)data[0]);
+      
+      }
+        
       else {
   
           uint32_t value =
@@ -69,10 +77,10 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
               ((uint32_t)data[1] << 8 ) |
               ((uint32_t)data[2]);
   
-          ESP_LOGD("vitoconnect",
-                   "ADDR=%04X decoded as be24 = %lu",
-                   addr,
-                   value);
+         // ESP_LOGD("vitoconnect",
+         //          "ADDR=%04X decoded as be24 = %lu",
+         //          addr,
+         //          value);
   
           publish_state((float)value);
       }
