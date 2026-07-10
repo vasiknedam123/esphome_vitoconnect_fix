@@ -40,8 +40,16 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
       // WO1C: některé 3bajtové registry jsou int16 little-endian + status byte.
       // B407 = Evaporation / saturated suction pressure temperature
       // B408 = Condensation temperature
-      if (addr == 0xB407 ||
-          addr == 0xB408) {
+     
+      if (addr == 0xB400 ||
+          addr == 0xB402 ||
+          addr == 0xB404 ||
+          addr == 0xB407 ||
+          addr == 0xB408 ||
+          addr == 0xB409 ||
+          addr == 0xB40A ||
+          addr == 0xB410 ||
+          addr == 0xB411) {
   
           int16_t value =
               (int16_t)(((uint16_t)data[1] << 8) | data[0]);
