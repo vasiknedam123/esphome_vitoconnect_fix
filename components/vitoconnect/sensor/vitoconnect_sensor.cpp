@@ -48,6 +48,7 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
           addr == 0xB408 ||
           addr == 0xB409 ||
           addr == 0xB40A ||
+          addr == 0x0740 ||        
           addr == 0xB410 ||
           addr == 0xB411) {
   
