@@ -64,12 +64,7 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
   
           publish_state((float)value);
       }
-      else if (addr == 0x130B) {
       
-          publish_state((float)data[0]);
-      
-      }
-        
       else {
   
           uint32_t value =
