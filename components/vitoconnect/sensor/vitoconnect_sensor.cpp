@@ -26,12 +26,50 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
     float value = tmp / 1.0f;
     publish_state(value);
   }  
-  else if (_length == 3){   // Commonly counter with different factors
-    uint32_t tmp = 0;
-    tmp = data[0] << 16 | data[1] << 8 | data[2];
-    float value = tmp / 1.0f;
-    publish_state(value);
+  else if (_length == 3) {
+  
+      uint16_t addr = dp ? dp->getAddress() : this->getAddress();
+  
+      ESP_LOGD("vitoconnect",
+               "ADDR=%04X LEN3 RAW=%02X %02X %02X",
+               addr,
+               data[0],
+               data[1],
+               data[2]);
+  
+      // WO1C: některé 3bajtové registry jsou int16 little-endian + status byte.
+      // B407 = Evaporation / saturated suction pressure temperature
+      // B408 = Condensation temperature
+      if (addr == 0xB407 ||
+          addr == 0xB408) {
+  
+          int16_t value =
+              (int16_t)(((uint16_t)data[1] << 8) | data[0]);
+  
+          ESP_LOGD("vitoconnect",
+                   "ADDR=%04X decoded as int16+status = %d",
+                   addr,
+                   value);
+  
+          publish_state((float)value);
+      }
+      else {
+  
+          uint32_t value =
+              ((uint32_t)data[0] << 16) |
+              ((uint32_t)data[1] << 8 ) |
+              ((uint32_t)data[2]);
+  
+          ESP_LOGD("vitoconnect",
+                   "ADDR=%04X decoded as be24 = %lu",
+                   addr,
+                   value);
+  
+          publish_state((float)value);
+      }
   }
+
+    
   else if (_length == 4){   // Commonly counter with different factors
     uint32_t tmp = 0;
     tmp = data[3] << 24 | data[2] << 16 | data[1] << 8 | data[0];
