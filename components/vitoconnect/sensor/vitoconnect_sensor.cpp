@@ -81,26 +81,11 @@ void OPTOLINKSensor::decode(uint8_t* data, uint8_t length, Datapoint* dp) {
       }
   }
 
-
-  else if (_length == 4) {
-    uint16_t addr = dp ? dp->getAddress() : this->getAddress();
-  
-    uint32_t value =
-        ((uint32_t)data[3] << 24) |
-        ((uint32_t)data[2] << 16) |
-        ((uint32_t)data[1] << 8 ) |
-        ((uint32_t)data[0]);
-  
-    ESP_LOGD("vitoconnect",
-             "ADDR=%04X LEN4 RAW=%02X %02X %02X %02X decoded uint32_le=%lu",
-             addr,
-             data[0],
-             data[1],
-             data[2],
-             data[3],
-             value);
-  
-    publish_state((float)value);
+  else if (_length == 4){   // Commonly counter with different factors
+    uint32_t tmp = 0;
+    tmp = data[3] << 24 | data[2] << 16 | data[1] << 8 | data[0];
+    float value = tmp / 1.0f;
+    publish_state(value);
   }
 }
 
